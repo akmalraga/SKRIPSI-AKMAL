@@ -1,0 +1,108 @@
+\chapter{MODEL DAN METODE PENELITIAN}
+\RaggedRight\section{Hamiltonian}
+\justifying
+Kami membangun Topological Insulator lemah tiga dimensi dengan menumpuk lapisan model Kane-Mele \parencite{PhysRevLett.95.226801}, mengikuti pendekatan peneleitian berikut \parencite{PhysRevB.91.085106}. Hamiltonian total terdiri dari suku Kane-Mele intralayer, hopping antarlapisan, dan kopling spin-orbit (SOC) antarlapisan:
+
+\[
+\mathcal{H} = \underbrace{\sum_l \mathcal{H}_{\text{KM},l}}_{\text{Intralayer}} 
++ \underbrace{\tau \sum_{\langle l,l' \rangle} \sum_{i,\sigma} c_{il\sigma}^\dagger c_{il'\sigma}}_{\text{Hopping Antarlapisan}}
++ \underbrace{i\lambda_{SO\perp} \sum_{\langle l,l' \rangle} \sum_{i,\sigma,\sigma'} \mu_{ll'} c_{il\sigma}^\dagger s^z_{\sigma\sigma'} c_{il'\sigma'}}_{\text{Kopling Spin-Orbit Antarlapisan}},
+\]
+
+dengan Hamiltonian Kane-Mele untuk lapisan \( l \) diberikan oleh:
+\[
+\mathcal{H}_{\text{KM},l} = t \sum_{\langle i,j \rangle,\sigma} c_{il\sigma}^\dagger c_{jl\sigma} 
++ i\lambda_{\text{SO}} \sum_{\langle\langle i,j \rangle\rangle,\sigma} \nu_{ij} c_{il\sigma}^\dagger s^z_{\sigma\sigma} c_{jl\sigma}
++ \lambda_v \sum_{i,\sigma} \xi_i c_{il\sigma}^\dagger c_{il\sigma}.
+\]
+
+\begin{itemize}
+\item \( \nu_{ij} = \pm 1 \)Staggered phase dari next-nearest-neighbor SOC (clockwise/anticlockwise paths)
+\item \( \mu_{ll'} = \pm 1 \)  Alternating phase untuk interlayer SOC
+\item \( s^z \) adalah matriks Pauli komponen-\( z \) untuk spin
+\item \( \xi_i = \pm 1 \) menunjukkan potensial subkisi (site A/B)
+\end{itemize}
+
+\section{Kode dan Alat Numerik}
+\begin{itemize}
+    \item Ubuntu OS = sistem operasi yang digunakan selama proses komputasi
+    \item Python3 = Bahasa Pemrograman yang digunakan(Dengan Librari dasar Numpy dan Matplotlib) 
+    \item PythTb = Librari Python3 untuk analisa keadaan topologi sistem(Kode dikembangkan dari contoh \parencite{Vanderbilt2018})
+    
+\end{itemize}
+
+\section{Implementasi Disorder}
+\subsection*{Disorder Anderson}
+Kami memperkenalkan potensial lokal acak ke dalam Hamiltonian bersih \( \mathcal{H}_0 \)\parencite{PhysRev.109.1492}:
+\[
+\mathcal{H} = \mathcal{H}_0 + \sum_{i,l,\sigma} V_{il} c_{il\sigma}^\dagger c_{il\sigma},
+\]
+dengan \( V_{il} \in [-W/2, W/2] \) adalah potensial acak terdistribusi seragam yang memiliki kekuatan disorder \( W \). Untuk mempertahankan signifikansi statistik dari hasil perhitungan topologi dalam sistem dengan disorder, perhitungan dilakukan untuk sejumlah konfigurasi disorder (ensemble averaging). Nilai $\mathbb{Z}_2$ yang konsisten pada mayoritas konfigurasi mengindikasikan kestabilan fase topologis.
+
+\subsection*{Disorder Hopping} 
+Kami memasukkan fluktuasi acak dalam hopping intralayer tetangga terdekat, Jenis disorder ini dibutuhkan untuk menyusun diagram fasa pada sistem:
+\[
+t_{ij} = t_0(1 + \delta_{ij}), \quad \delta_{ij} \in [-\Delta, \Delta],
+\]
+di mana \( \delta_{ij} \) merepresentasikan variasi relatif kekuatan hopping dengan amplitudo \( \Delta \).
+
+\section{Density Of States}
+\subsection{Perhitungan \textit{Density of States} (DoS)}  
+\label{subsec:dos}
+
+\textit{Density of States} (DoS) merepresentasikan kerapatan keadaan elektronik per satuan energi. Pada simulasi ini, DoS dihitung menggunakan metode \textit{histogram} dari spektrum energi yang diperoleh melalui diagonalisasi Hamiltonian. Untuk sistem dengan disorder, DoS rata-rata didefinisikan sebagai:
+
+    \begin{equation}
+    \langle \text{DoS}(E) \rangle = \frac{1}{N_{\text{samples}}} \sum_{k=1}^{N_{\text{samples}}} \text{DoS}^{(k)}(E),
+    \end{equation}
+
+dengan \(N_{\text{samples}} = 500\) adalah jumlah realisasi disorder. Deviasi standar \(\sigma_{\text{DoS}}\) dihitung untuk mengkuantifikasi fluktuasi statistik.
+
+\subsection{Prosedur \textit{Averaging}}  
+\label{subsec:averaging}
+
+Langkah-langkah \textit{averaging} yang dilakukan:  
+\begin{enumerate}
+    \item Bangkitkan potensial acak \(V_i \in [-W/2, W/2]\) untuk setiap konfigurasi disorder.  
+    \item Hitung spektrum energi menggunakan diagonalisasi Hamiltonian.  
+    \item Kumpulkan semua nilai eigen dari \(N_{\text{samples}}\) konfigurasi.  
+    \item Hitung DoS dengan membagi rentang energi menjadi 50 \textit{bin} dan normalisasi kerapatan.  
+\end{enumerate}
+
+\begin{table}[h]
+\caption{Parameter Simulasi DoS}
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Parameter} & \textbf{Nilai} \\ 
+\hline
+Jumlah konfigurasi disorder (\(N_{\text{samples}}\)) & 500 \\  
+Jumlah \textit{bin} histogram & 50 \\  
+Rentang energi & \([-4t, 4t]\) \\  
+\hline
+\end{tabular}
+\end{table}
+
+\section{Parameter yang digunakan dalam simulasi model Kane-Mele 3D}
+\begin{table}[H]
+\centering
+\small % memperkecil font dalam tabel
+\caption{Parameter yang digunakan dalam simulasi model Kane-Mele 3D}
+\renewcommand{\arraystretch}{1.3} % spasi antar baris sedikit diperbesar biar tetap enak dibaca
+\begin{tabular}{|c|c|c|>{\raggedright\arraybackslash}p{5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Simbol} & \textbf{Nilai / Rentang} & \textbf{Justifikasi} \\ \hline
+Hopping intralayer & $t$ & $1{,}0\,\text{eV}$ & Nilai standar grafena (Castro Neto et al., 2009) \\ \hline
+Kekuatan spin-orbit & $\lambda_{\text{SO}}$ & $0{,}1t$ -- $0{,}3t$ & Estimasi teoritis dari model Kane-Mele \\ \hline
+Kekuatan disorder & $W$ & $0$ -- $10\lambda_{\text{SO}}$ & Untuk menguji batas kritis $W_c^{3D}$ \\ \hline
+
+\end{tabular}
+\end{table}
+
+\section{Diagram alur}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\linewidth]{picture/1.pdf}
+\caption{Diagram alur simulasi}
+\label{fig:flowchart_a5}
+\end{figure}
